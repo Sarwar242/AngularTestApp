@@ -8,6 +8,7 @@ import { IUserModel } from 'src/app/models/UserModel';
 })
 export class UserListComponent {
   title:string="All Users List";
+  
   userData:IUserModel={
       serial: 4,
       user_id: "leads",
