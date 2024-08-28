@@ -17,15 +17,16 @@ export class AddUserComponent implements OnInit {
   user_id?: string;
   userModelList: IUserModel[] = [];
   userModel: IUserModel = {};
+  isLoading=false;
 
   constructor(private fb: FormBuilder, private userService: UserService, private router: Router, private route: ActivatedRoute) { }
 
   ngOnInit(): void {
     this.userForm = this.fb.group({
-      serial: [0],
+      serial: [''],
       user_id: [''],
       full_name: ['', Validators.required],
-      email: ['', [Validators.required, Validators.email]],
+      email: ['', [Validators.required]],
       mobile_number: ['01', Validators.required],
       present_address: [''],
       permanent_address: ['']
@@ -41,36 +42,42 @@ export class AddUserComponent implements OnInit {
   }
 
   fetchUserData(user_id: string): void {
+    this.isLoading=true;
     this.userService.getUserById(user_id).subscribe((response): any => {
       if (response.status === "OK") {
         const userData = response.result as IUserModel[];
         this.userForm.patchValue(userData[0]);
         this.isDisabled = true;
         this.submitBtn = "Update";
+        this.isLoading=false;
       } else {
         this.submitBtn = "Submit";
+        this.isLoading=false;
       }
     });
   }
 
-
   onSubmit(): void {
     if (this.userForm.valid) {
+      this.isLoading=true;
       this.userRequest.user_id = this.userForm.controls['user_id'].value;
       this.userRequest.full_name = this.userForm.controls['full_name'].value;
       this.userRequest.email = this.userForm.controls['email'].value;
       this.userRequest.mobile_number = this.userForm.controls['mobile_number'].value;
       this.userRequest.present_address = this.userForm.controls['present_address'].value;
-      this.userRequest.permanent_address = this.userForm.controls['permanent_address'].value;
-      if (this.userForm.controls['user_id'].value) {
+      this.userRequest.permanent_address = this.userForm.controls['permanent_address'].value;     
+      if (this.user_id) {
         this.userRequest.serial = this.userForm.controls['serial'].value;
       }
 
       this.userService.saveUserData(this.userRequest).subscribe((req) => {
         if (req.status == "OK") {
+          this.isLoading=false;
           this.router.navigate(['/']);
         }
       });
+      
+      this.isLoading=false;
     }
   }
 }

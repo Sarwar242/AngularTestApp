@@ -11,10 +11,10 @@
                 <th scope="col">Mobile Number</th>
                 <th scope="col">Present Address</th>
                 <th scope="col">Permanent Address</th>
-                <th scope="col">Actions</th>
+                <th scope="col" class="text-center">Actions</th>
             </tr>
         </thead>
-        <tbody>
+        <tbody *ngIf="!isLoading">
             <tr *ngFor="let userData of userList">
                 <th scope="row">{{userData.serial}}</th>
                 <td>{{userData.user_id}}</td>
@@ -35,4 +35,9 @@
             </tr>
         </tbody>
     </table>
+</div>
+<div *ngIf="isLoading" class="loader-container">
+    <div class="loader">
+        <img src="assets/Spinner.gif" alt="Loading...">
+    </div>
 </div>

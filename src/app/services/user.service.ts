@@ -21,7 +21,7 @@ export class UserService {
     return this.http.get(`${environment.rootUrl}/User/GetAllUserDetails`, { headers: reqHeader });
   }
 
-  getUserById(user_id?:string): Observable<ResponseData<IUserModel>> {
+  getUserById(user_id?: string): Observable<ResponseData<IUserModel>> {
     var reqHeader = new HttpHeaders({
       'Content-Type': 'application/json'
     });
@@ -35,14 +35,12 @@ export class UserService {
       'Access-Control-Allow-Origin': "*"
     });
 
-    
-
     return this.http.post(`${environment.rootUrl}/User/InsertUpdateUser`, req, {
       headers: reqHeader,
     });
   }
 
-    deleteUserData(serial?:number): Observable<ResponseData<string>> {
+  deleteUserData(serial?: number): Observable<ResponseData<string>> {
     var reqHeader = new HttpHeaders({
       'Content-Type': 'application/json',
       'Access-Control-Allow-Origin': "*"

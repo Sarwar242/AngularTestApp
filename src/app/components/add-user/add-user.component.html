@@ -42,3 +42,8 @@
         <button type="submit" class="btn btn-danger">{{submitBtn}}</button>
     </form>
 </div>
+<div *ngIf="isLoading" class="loader-container">
+    <div class="loader">
+        <img src="assets/Spinner.gif" alt="Loading...">
+    </div>
+</div>

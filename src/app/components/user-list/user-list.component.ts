@@ -11,6 +11,7 @@ import { UserService } from 'src/app/services/user.service';
 export class UserListComponent implements OnInit {
   title: string = "All Users List";
   userList: IUserModel[] = [];
+  isLoading=false;
 
  constructor(private userService:UserService, private router:Router) {
  }
@@ -20,22 +21,29 @@ export class UserListComponent implements OnInit {
   }
 
   getUserList() {
+    this.isLoading=true;
     this.userService.getUserList().subscribe((response): any => {
+      
       if (response.status === "OK")
         this.userList = response.result as IUserModel[];
-      else return false;
+      this.isLoading=false;
+    },
+    error => {
+      this.isLoading = false;
+      console.error('Error fetching user list:', error);
     })
   }
 
   deleteUser(serial?:number) {
+    this.isLoading=true;
     this.userService.deleteUserData(serial).subscribe((response): any => {
-      console.log(response)
+      
       if (response.status === "OK")
         this.router.navigateByUrl('/', {skipLocationChange: true}).then(() => {
           this.getUserList();
         });
       
-      else return false;
+      else this.isLoading=false;
     })
   }
 

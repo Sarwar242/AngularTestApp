@@ -1,1 +1,21 @@
-/* You can add global styles to this file, and also import other style files */
+.loader-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: rgba(255, 255, 255, 0.7);
+    z-index: 9999;
+  }
+  
+  .loader {
+    text-align: center;
+  }
+  
+  .loader img {
+    width: 50px; /* Adjust based on your GIF size */
+    height: 50px; /* Adjust based on your GIF size */
+  }
