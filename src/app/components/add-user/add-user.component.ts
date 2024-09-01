@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Route, Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { IUserModel } from 'src/app/models/UserModel';
 import { UserService } from 'src/app/services/user.service';
 
@@ -17,7 +17,7 @@ export class AddUserComponent implements OnInit {
   user_id?: string;
   userModelList: IUserModel[] = [];
   userModel: IUserModel = {};
-  isLoading=false;
+  isLoading = false;
 
   constructor(private fb: FormBuilder, private userService: UserService, private router: Router, private route: ActivatedRoute) { }
 
@@ -25,9 +25,9 @@ export class AddUserComponent implements OnInit {
     this.userForm = this.fb.group({
       serial: [''],
       user_id: [''],
-      full_name: ['', Validators.required],
-      email: ['', [Validators.required]],
-      mobile_number: ['01', Validators.required],
+      full_name: ['', [Validators.required]],
+      email: ['', [Validators.required, Validators.email]],
+      mobile_number: ['01', [Validators.required, Validators.pattern(/^[0-9]{11}$/)]],
       present_address: [''],
       permanent_address: ['']
     });
@@ -42,42 +42,77 @@ export class AddUserComponent implements OnInit {
   }
 
   fetchUserData(user_id: string): void {
-    this.isLoading=true;
+    this.isLoading = true;
     this.userService.getUserById(user_id).subscribe((response): any => {
       if (response.status === "OK") {
         const userData = response.result as IUserModel[];
         this.userForm.patchValue(userData[0]);
         this.isDisabled = true;
         this.submitBtn = "Update";
-        this.isLoading=false;
+        this.isLoading = false;
       } else {
         this.submitBtn = "Submit";
-        this.isLoading=false;
+        this.isLoading = false;
       }
     });
   }
 
   onSubmit(): void {
     if (this.userForm.valid) {
-      this.isLoading=true;
-      this.userRequest.user_id = this.userForm.controls['user_id'].value;
-      this.userRequest.full_name = this.userForm.controls['full_name'].value;
-      this.userRequest.email = this.userForm.controls['email'].value;
-      this.userRequest.mobile_number = this.userForm.controls['mobile_number'].value;
-      this.userRequest.present_address = this.userForm.controls['present_address'].value;
-      this.userRequest.permanent_address = this.userForm.controls['permanent_address'].value;     
+      this.isLoading = true;
+      this.userRequest = {
+        user_id: this.userForm.get('user_id')?.value,
+        full_name: this.userForm.get('full_name')?.value,
+        email: this.userForm.get('email')?.value,
+        mobile_number: this.userForm.get('mobile_number')?.value,
+        present_address: this.userForm.get('present_address')?.value,
+        permanent_address: this.userForm.get('permanent_address')?.value
+      };
+      
       if (this.user_id) {
-        this.userRequest.serial = this.userForm.controls['serial'].value;
+        this.userRequest.serial = this.userForm.get('serial')?.value;
       }
 
       this.userService.saveUserData(this.userRequest).subscribe((req) => {
         if (req.status == "OK") {
-          this.isLoading=false;
+          this.isLoading = false;
           this.router.navigate(['/']);
         }
       });
-      
-      this.isLoading=false;
+    } else {
+      this.markFormGroupTouched(this.userForm);
     }
+  }
+
+  markFormGroupTouched(formGroup: FormGroup) {
+    Object.values(formGroup.controls).forEach(control => {
+      control.markAsTouched();
+
+      if (control instanceof FormGroup) {
+        this.markFormGroupTouched(control);
+      }
+    });
+  }
+
+  // Helper methods for template
+  isFieldInvalid(fieldName: string): boolean {
+    const control = this.userForm.get(fieldName);
+    return control ? control.invalid && (control.dirty || control.touched) : false;
+  }
+
+  getErrorMessage(fieldName: string): string {
+    const control = this.userForm.get(fieldName);
+    if (control) {
+      if (control.hasError('required')) {
+        return 'This field is required';
+      }
+      if (control.hasError('email')) {
+        return 'Please enter a valid email address';
+      }
+      if (control.hasError('pattern') && fieldName === 'mobile_number') {
+        return 'Please enter a valid 11-digit mobile number';
+      }
+    }
+    return '';
   }
 }

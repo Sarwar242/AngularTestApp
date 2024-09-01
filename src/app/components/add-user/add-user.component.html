@@ -1,7 +1,6 @@
 <div class="container my-5">
     <h2 class="mb-4">User Information Form</h2>
     <form [formGroup]="userForm" (ngSubmit)="onSubmit()">
-
         <div class="row">
             <div class="col-md-6 mb-3">
                 <label for="user_id" class="form-label">User ID</label>
@@ -12,20 +11,30 @@
                 <input type="number" [disabled]="isDisabled" class="form-control" id="serial" formControlName="serial">
             </div>
         </div>
+
         <div class="row">
             <div class="col-md-6 mb-3">
                 <label for="full_name" class="form-label">Full Name *</label>
-                <input type="text" class="form-control" id="full_name" formControlName="full_name" required>
+                <input type="text" class="form-control" [ngClass]="{'is-invalid': isFieldInvalid('full_name')}" id="full_name" formControlName="full_name" required>
+                <div *ngIf="isFieldInvalid('full_name')" class="invalid-feedback">
+                    {{ getErrorMessage('full_name') }}
+                </div>
             </div>
             <div class="col-md-6 mb-3">
                 <label for="email" class="form-label">Email *</label>
-                <input type="email" class="form-control" id="email" formControlName="email" required>
+                <input type="email" class="form-control" [ngClass]="{'is-invalid': isFieldInvalid('email')}" id="email" formControlName="email" required>
+                <div *ngIf="isFieldInvalid('email')" class="invalid-feedback">
+                    {{ getErrorMessage('email') }}
+                </div>
             </div>
         </div>
 
         <div class="mb-3">
             <label for="mobile_number" class="form-label">Mobile Number *</label>
-            <input type="tel" class="form-control" id="mobile_number" formControlName="mobile_number" required>
+            <input type="tel" class="form-control" [ngClass]="{'is-invalid': isFieldInvalid('mobile_number')}" id="mobile_number" formControlName="mobile_number" required>
+            <div *ngIf="isFieldInvalid('mobile_number')" class="invalid-feedback">
+                {{ getErrorMessage('mobile_number') }}
+            </div>
         </div>
 
         <div class="mb-3">
@@ -35,13 +44,13 @@
 
         <div class="mb-3">
             <label for="permanent_address" class="form-label">Permanent Address</label>
-            <textarea class="form-control" id="permanent_address" formControlName="permanent_address"
-                rows="3"></textarea>
+            <textarea class="form-control" id="permanent_address" formControlName="permanent_address" rows="3"></textarea>
         </div>
 
-        <button type="submit" class="btn btn-danger">{{submitBtn}}</button>
+        <button type="submit" class="btn btn-danger" [disabled]="!userForm.valid">{{submitBtn}}</button>
     </form>
 </div>
+
 <div *ngIf="isLoading" class="loader-container">
     <div class="loader">
         <img src="assets/Spinner.gif" alt="Loading...">
